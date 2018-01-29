@@ -1,23 +1,39 @@
+
+# coding: utf-8
+
+# In[1]:
+
+
 import numpy
 import urllib
 import scipy.optimize
 import math
 import random
+import collections
 from collections import defaultdict
+
+
+# In[2]:
+
 
 print("Reading data...")
 # READ IN DATA
 print("done")
 
-# Given a document (string of text), creates a dictionary 
-# with all the words in the document and their word count
 
+# In[3]:
+
+
+# Create a function which given a string of text will create dictionary 
+# with all the words in the document and their word count
 def feat(d):
     docDict = collections.defaultdict(int)
-    # USE SLICING AND REMOVE PUNCTUATION TO GET THE WORDS
-    for word in d:
+    for word in d.split():
         docDict[word] += 1
     return docDict
+
+
+# In[4]:
 
 
 # Cosine Similarity for lists of integers
@@ -36,8 +52,11 @@ def cosineSimilarity(queryVector, reviewVector):
         return (numerator/(mag1*mag2)**0.5)
 
 
+# In[5]:
+
+
 # Cosine Similarity for text
-def cosineSimilarity(query, review):
+def cosineSimilarity1(query, review):
     numerator = 0
     mag1 = 0
     mag2 = 0
@@ -49,7 +68,7 @@ def cosineSimilarity(query, review):
     # Find the words the 2 dictionaries have in common
     querySet = set(queryDict.keys())
     reviewSet = set(reviewDict.keys())
-    commonWords = querySet.intersection(reviewSet)
+    commonWords = querySet.union(reviewSet)
     print(commonWords)
     
     # Find the cosine similarity
@@ -61,48 +80,94 @@ def cosineSimilarity(query, review):
         return (numerator/(mag1*mag2)**0.5)
 
 
-# GET THE DOCUMENT SET FROM THE DATA
-D = []
+# In[6]:
+
+
+# Documents from https://gist.github.com/anabranch/48c5c0124ba4e162b2e3
+
+document_0 = "China has a strong economy that is growing at a rapid pace. However politically it differs greatly from the US Economy."
+document_1 = "At last, China seems serious about confronting an endemic problem: domestic violence and corruption."
+document_2 = "Japan's prime minister, Shinzo Abe, is working towards healing the economic turmoil in his own country for his view on the future of his people."
+document_3 = "Vladimir Putin is working hard to fix the economy in Russia as the Ruble has tumbled."
+document_4 = "What's the future of Abenomics? We asked Shinzo Abe for his views"
+document_5 = "Obama has eased sanctions on Cuba while accelerating those against the Russian Economy, even as the Ruble's value falls almost daily."
+document_6 = "Vladimir Putin is riding a horse while hunting deer. Vladimir Putin always seems so serious about things - even riding horses. Is he crazy?"
+
+all_documents = [document_0, document_1, document_2, document_3, document_4, document_5, document_6]
+
+
+# In[7]:
 
 
 # Fill in a dictionary of dictionaries 
 # The keys are the documents and the values are dictionaries with the terms and their counts
 docDict = collections.defaultdict(lambda: collections.defaultdict(int))
-for doc in D:
+for doc in all_documents:
     docDict[doc] = feat(doc)
+
+
+# In[8]:
 
 
 # Term frequency
 # Returns number of times a term appears in a specific document
 def tf(term, document, docDict):
-    return docDict[document[term]]
+    return docDict[document][term]/len(document.split())
+
+
+# In[9]:
 
 
 # Inverse document frequency
 # Log of number of documents divided by the number of documents in the documentSet which contain the term
-def idf(term, documentSet, docDict):
+def idf(term, docDict):
     count = 0
-    for doc in docSet:
-        if docSet[doc[term]] in docSet:
+    for doc in docDict:
+        if term in doc:
             count += 1
-    return math.log(len(documentSet)/count)
+    return math.log(len(docDict)/count)
+
+
+# In[10]:
 
 
 # Document is a string of text
 # DocumentSet is an array or set
 # Returns tfidf score given a term, document, and set of documents
-def tfidf(term, document, documentSet, docDict):
-    tf(term, document, documentSet, docDict) * idf(term, documentSet, docDict)
+def tfidf(term, document, docDict):
+    return tf(term, document, docDict) * idf(term, docDict)
 
 
-def bm25():
-    return;
+# In[11]:
+
+
+# k and b are tuning parameters (EX: k = 1.2-2.0, b = 0.75)
+def bm25(term, document, docDict, k, b):
+    avgLength = 0
+    for doc in docDict.keys():
+        avgLength += len(doc.split())
+    avgLength = avgLength/len(docDict)
+    return idf(term, docDict) * (tf(term, document, docDict) * (k+1))/(tf(term, document, docDict) + k *(1-b+b*(len(document.split()))/avgLength))
+
+
+# In[12]:
 
 
 # TEST
-queryVector = [1,2,3,4]
+queryVector = [2,2,3,4]
 reviewVector = [6,6,3,3]
-print(cosineSimilarity(queryVector,reviewVector))
+#print(cosineSimilarity(queryVector,reviewVector))
 
 words = ["hello", "my", "name", "is", "hello", "name"]
-print(feat(words))
+words1 = ["is"]
+
+#print(cosineSimilarity1(words,words1))
+
+#print(feat(words))
+
+
+# In[13]:
+
+
+print(bm25("China", document_1, docDict,1.5,0.75))
+
