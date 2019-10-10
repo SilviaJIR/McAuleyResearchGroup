@@ -1,15 +1,11 @@
 README.md
 
-By Mikhail Boulgakov, Lavanya Satyan, Silvia Gong
-Prof. McAuley
-2018
+By Mikhail Boulgakov, Lavanya Satyan, Silvia Jinrong Gong
+Advised by Prof. Julian McAuley
+09/2017 - 06/2018
 
-Check out the state of the Research document for more information on our
-research topic and background.
-
-This github is split into 2 folder. The folder titled Old contains our previous
-versions of the files used in this project. The Final folder contains the final
-versions of all our code as well as the supporting data. 
+This github is split into 2 folder. The folder titled Code contains the final
+versions of all our code as well as the supporting data. The folder titled Presentation contains the Research Proposal, Final Poster and presentation slides.
 
 The Regression on Data file trains a linear regression model on the labelled 
 input data (out.csv). This data was extracted from 
@@ -24,7 +20,7 @@ All of the ipynb files can be run in Jupyter Notebook. You will need to
 download sklearn (scipy toolkit) and nltk (natural language processing toolkit)
 to run this code.
 
-FinalPoster.pdf contains a detailed description of our model.
+Presentation/Poster.pdf contains a detailed description of our model.
 
 For more information about machine learning, recommender systems, and natural
 language processing check out UCSD CSE 158 - Recommender Systems and Web Mining
